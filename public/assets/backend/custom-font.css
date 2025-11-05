@@ -1,0 +1,147 @@
+/* Import Inter Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --font-family: 'Inter', 'Segoe UI', 'Roboto', 'Open Sans', sans-serif;
+    --font-size-base: 13px;         /* Was 14px */
+    --font-size-sm: 12px;           /* Was 12px */
+    --font-size-lg: 16px;           /* Was 16px */
+    --font-size-xl: 20px;           /* Was 20px */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+}
+
+* {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    box-sizing: border-box;
+}
+
+body {
+    font-size: var(--font-size-base);
+    line-height: 1.7;
+    /* color: #333; */
+    /* background-color: #fff; */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--font-weight-bold);
+    line-height: 1.4;
+    margin-bottom: 0.6em;
+    /* color: #222; */
+}
+
+h1 { font-size: 2.5rem; }  /* ~40px */
+h2 { font-size: 2.125rem; }/* ~34px */
+h3 { font-size: 1.75rem; } /* ~28px */
+h4 { font-size: 1.5rem; }  /* ~24px */
+h5 { font-size: 1.25rem; } /* ~20px */
+h6 { font-size: 1rem; }    /* ~16px */
+
+/* Paragraphs */
+p {
+    margin-bottom: 1em;
+    font-size: var(--font-size-base);
+    /* color: #444; */
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Inputs, buttons, selects, textareas */
+input, button, select, textarea {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+}
+
+button {
+    font-weight: var(--font-weight-medium);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+
+
+th {
+    /* background-color: #f8f9fa; */
+    font-weight: var(--font-weight-bold);
+    /* text-align: left; */
+}
+
+/* Labels */
+label {
+    font-weight: var(--font-weight-medium);
+    display: inline-block;
+    margin-bottom: 0.5em;
+    font-size: var(--font-size-base);
+}
+
+/* Lists */
+ul, ol {
+    padding-left: 1.75em;
+    margin-bottom: 1em;
+    font-size: var(--font-size-base);
+}
+
+/* Code/Pre */
+code, pre {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: var(--font-size-sm);
+}
+
+/* Small, strong, em */
+small {
+    font-size: var(--font-size-sm);
+}
+strong {
+    font-weight: var(--font-weight-bold);
+}
+em {
+    font-style: italic;
+}
+
+/* Blockquote */
+blockquote {
+    font-style: italic;
+    padding-left: 1em;
+    border-left: 4px solid #ccc;
+    margin: 1em 0;
+    /* color: #666; */
+    font-size: var(--font-size-lg);
+}
+/* Placeholder text styling */
+::placeholder {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: #888;
+    opacity: 1;
+}
+
+input::placeholder,
+textarea::placeholder {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    color: #888;
+    opacity: 1;
+}

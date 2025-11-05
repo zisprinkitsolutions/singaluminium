@@ -1,0 +1,2 @@
+ALTER TABLE `job_project_tasks` ADD `qty` DOUBLE(12,2) NULL DEFAULT NULL AFTER `boq_task_id`, ADD `sqm` DOUBLE(12,2) NULL DEFAULT NULL AFTER `qty`, ADD `rate` DOUBLE(12,2) NULL DEFAULT NULL AFTER `sqm`, ADD `total` DOUBLE(12,2) NULL DEFAULT NULL AFTER `rate`;
+ALTER TABLE `job_projects` ADD `project_no` VARCHAR(100) NULL DEFAULT NULL AFTER `handover_date`, ADD `address` VARCHAR(100) NULL DEFAULT NULL AFTER `project_no`;

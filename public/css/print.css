@@ -1,0 +1,140 @@
+/*-----start print layout---*/
+.header {
+    visibility: hidden;
+    width: 100%;
+	height: 150px;
+    background: #fff;
+    position: fixed;
+    top: 0px;
+    left: 0;
+    text-align: center;
+    padding-bottom: 10px !important
+}
+
+.footer {
+    visibility: hidden;
+    width: 100%;
+	height: 80px !important;
+    position: fixed;
+    bottom: 0px;
+    left: 0;
+    background: #fff;
+    z-index: 99999999 !important;
+    text-align: left;
+}
+
+.print-only {
+    display: none !important;
+}
+
+.headerGroup {
+	position: relative;
+	background: transparent;
+}
+
+.headerGroup:after {
+	font-size: 42px;
+	color: #fff;
+	filter: grayscale(0.5);
+	background-size: cover;
+	opacity: 0;
+	position: absolute;
+	top: 50px;
+	left: 50%;
+	width: 450px;
+	height: 150px;
+	z-index: 1 !important;
+	transform: translate(-50%);
+}
+.invoice-view-wrapper{
+    display:none;
+}
+/* ============media start========== */
+@media print {
+    .invoice-view-wrapper{
+        display: block;
+    }
+	.headerGroup:after {
+		opacity: .1;
+        padding-bottom: 10px !important;
+	}
+	.content ,.content-wrapper{
+		padding: 0 !important;
+		margin: 0 !important;
+		background-color: #fff;
+	}
+    .header, .header-block {
+        height: 150px;
+		background-color: #fff;
+		padding: 0;
+		margin: 0;
+        margin-bottom: 10px;
+    }
+    .footer, .footer-block {
+        height: 80px !important;
+		background-color: none;
+    }
+    footer {
+        page-break-after: always;
+		height: 80px !important;
+    }
+    @page {
+        size: A4;
+        -webkit-print-color-adjust: exact;
+        margin: 10px !important;
+		padding:0 !important;
+		width: 100%;
+		height: 100%;
+    }
+    body{
+        -webkit-print-color-adjust: exact;
+    }
+    thead {
+        display: table-header-group;
+    }
+    tfoot {
+        display: table-footer-group;
+    }
+    .invoice-print {
+        width: 95%;
+    }
+    .header {
+        visibility: visible;
+        page-break-after: always;
+    }
+    .footer {
+        visibility: visible;
+    }
+      html, body {
+        height: 99%;
+        page-break-after: avoid;
+        page-break-before: avoid;
+    }
+    /* ----for content management in print layout---- */
+    .no-print {
+        display: none;
+    }
+    .print-only {
+        display: block !important;
+    }
+    /* ----aditional style----- */
+    .page{
+        margin-right:2rem;
+        margin-left: 2rem;
+    }
+    .customer-info,.company-info{
+    color: black;
+    /* font-weight: 600; */
+    }
+    pre{
+    color:#000 !important;
+    background-color: transparent !important;
+}
+}
+
+pre{
+    color:#000 !important;
+    background-color: transparent !important;
+}
+/* ==============end print=========== */
+/* ================================== */
