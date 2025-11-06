@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\backend;
 
+
 use App\Http\Controllers\Controller;
 use App\Journal;
 use App\JournalRecord;
@@ -200,6 +201,41 @@ class FundAllocationController extends Controller
 
         return $journal_no;
     }
+    
+    public function fund_allocation_delete($id)
+    {
+        $fund = FundAllocation::where('id', $id)->first();
+        if ($fund) {
+            if ($fund->approved) {
+                $journal = Journal::where('fund_allocation_id', $id)->first();
+                if ($journal) {
+                    JournalRecord::where('journal_id', $journal->id)->forcedelete();
+                    $journal->forcedelete();
+                } else {
+                    $journal = Journal::where('invoice_id', $id)->where('transection_type', 'RECEIPT VOUCHER')->where('voucher_type', 'Receipt Voucher')->first();
+                    if ($journal) {
+                        JournalRecord::where('journal_id', $journal->id)->forcedelete();
+                        $journal->forcedelete();
+                    }
+                }
+            }
+             $fund->forcedelete();
+
+                    $notification = array(
+                        'message'       => 'Fund Allocation Deleted',
+                        'alert-type'    => 'success'
+                    );
+                    return back()->with($notification);
+        }
+        else
+        {
+            $notification = array(
+                        'message'       => 'Fund Allocation Not Found',
+                        'alert-type'    => 'warning'
+                    );
+                    return back()->with($notification);
+        }
+    }
 
 
     public function fund_allocation_approval($id)
@@ -215,12 +251,12 @@ class FundAllocationController extends Controller
                 {
                     $journal = new Journal();
                     $journal->project_id        = 1;
-                    $journal->transection_type  = 'RECEIPT VOUCHER';
+                    $journal->transection_type  = 'Fund Allocation';
                     $journal->transaction_type  = 'DEBIT';
                     $journal->journal_no        = $this->journal_no();
                     $journal->date              = $fund->date;
-                    $journal->voucher_type      = 'Receipt Voucher';
-                    $journal->invoice_id        = $fund->id;
+                    $journal->voucher_type      = 'Fund Allocation';
+                    $journal->fund_allocation_id        = $fund->id;
                     $journal->pay_mode          =  $fund->fromAccount->title ;
                     $journal->invoice_no        = 0;
                     $journal->cost_center_id    = 1;

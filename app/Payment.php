@@ -19,4 +19,8 @@ class Payment extends Model
     public function bank_name(){
         return $this->belongsTo(AccountSubHead::class, 'bank_id');
     }
+
+    public function payment_account(){
+        return $this->belongsTo(Employee::class, 'paid_by', 'id');
+    }
 }

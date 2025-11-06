@@ -307,10 +307,17 @@
 
     <div class="d-flex justify-content-center align-items-center flex-row-reverse mb-2 mt-2 "
         style="padding-top: 5px;padding-right: 8px;">
-        <div class="" style="margin-top: 5px;">
+        <div class="" style="margin-top: 5px;padding-right: 3px">
             <a href="#" onclick="window.print();"
                 class="btn btn-icon btn-secondary custom-action-btn print-hideen" data-dismiss="modal" data-bs-toggle="tooltip"
                 data-bs-placement="bottom" title="Print Now"><i class="bx bx-printer"></i> Print
+            </a>
+        </div>
+          <div class="print-hideen" style="margin-top: 5px;">
+            <a href="{{ route('payment-voucher-delete', $payment->id) }}"
+                class="btn btn-danger custom-action-btn"
+                onclick="event.preventDefault(); deleteAlert(this, 'About to delete payment. Please, confirm?');" title="Delete Now">
+                <i class="bx bx-trash"></i> Delete
             </a>
         </div>
         @if ($payment->status == 'Realised')

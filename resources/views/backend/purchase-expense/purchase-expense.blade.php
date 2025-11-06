@@ -628,6 +628,47 @@
     {{-- js work by mominul start --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+@if (session('message_import'))
+<script>
+    const rawHtml = `{!! session('message_import') !!}`;
+
+            Swal.fire({
+                icon: '{{ session('alert-type') ?? 'success' }}',
+                title: 'Invoice Import Result',
+                html: rawHtml +
+                    `<br><button id="exportExcelBtn" class="swal2-confirm swal2-styled" style="background-color: #3085d6; margin-top: 10px;">Export to Excel</button>`,
+                showConfirmButton: true
+            });
+
+            // Wait for DOM to load inside Swal
+            setTimeout(() => {
+                $('#exportExcelBtn').on('click', function() {
+                    // Extract messages from <li> tags
+                    const container = document.createElement('div');
+                    container.innerHTML = rawHtml;
+
+                    const items = Array.from(container.querySelectorAll('li')).map(li => [li.textContent
+                    .trim()]);
+
+                    if (items.length === 0) {
+                        items.push(['No skipped messages found.']);
+                    }
+
+                    // Create worksheet
+                    const ws = XLSX.utils.aoa_to_sheet([
+                        ['Skipped Messages'], ...items
+                    ]);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Skipped Rows");
+
+                    // Trigger download
+                    XLSX.writeFile(wb, 'invoice_skipped_rows.xlsx');
+                });
+            }, 100);
+</script>
+@endif
     <script>
         var index = 1;
 

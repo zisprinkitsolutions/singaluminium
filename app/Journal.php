@@ -275,4 +275,21 @@ class Journal extends Model
     {
         return $this->hasMany(JournalEntryDocument::class, 'journal_no', 'journal_no');
     }
+    
+    public function getIsDeletableAttribute()
+    {
+        return !(
+            $this->invoice_id ||
+            $this->receipt_id ||
+            $this->payment_id ||
+            $this->purchase_id ||
+            $this->fund_allocation_id ||
+            $this->purchase_expense_id ||
+            $this->purchase_return_id ||
+            $this->cahrity_id ||
+            $this->donation_id ||
+            $this->applicatio_fee_id
+
+        );
+    }
 }

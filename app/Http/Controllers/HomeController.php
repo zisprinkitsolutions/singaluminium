@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Fifo;
 use App\FifoInvoice;
 use App\Invoice;
 use App\InvoiceAmount;
 use App\Employee;
-
 use App\InvoiceItem;
 use App\ItemList;
 use App\JobProject;
@@ -47,13 +45,17 @@ use App\EngineerReport;
 use App\LpoBill;
 use Carbon\Carbon;
 use App\NewProject;
+use App\PaymentInvoice;
+use App\PurchaseExpenseItem;
+use App\PurchaseExpenseItemTemp;
+use App\PurchaseExpenseTemp;
 use App\Requisition;
 use App\TempPaymentVoucher;
+use App\TempPaymentVoucherDetail;
 use App\User;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -700,6 +702,66 @@ class HomeController extends Controller
             'approved_by_data' => $approvedByData,
             'edited_by_data'   => $editedByData,
         ];
+    }
+    
+    
+    public function party_correction()
+    {
+        // dd('i am here to blast');
+        DB::transaction(function () {
+            // Step 1: Find all duplicate (pi_name, pi_type) combinations
+            $duplicates = DB::table('party_infos')
+                ->select('pi_name', 'pi_type', DB::raw('COUNT(*) as total'))
+                ->groupBy('pi_name', 'pi_type')
+                ->having('total', '>', 1)
+                ->get();
+
+            // Step 2: Process each duplicate group
+            foreach ($duplicates as $d) {
+                // Find all duplicates for this combination
+                $parties = PartyInfo::where('pi_name', $d->pi_name)
+                    ->where('pi_type', $d->pi_type)
+                    ->orderBy('id', 'asc') // keep the oldest (smallest ID)
+                    ->get();
+
+                if ($parties->count() < 2) {
+                    continue;
+                }
+
+                // First one to keep
+                $keeper = $parties->first();
+
+                // All others to delete
+                $duplicateIds = $parties->pluck('id')->skip(1)->toArray();
+                
+
+                if (!empty($duplicateIds)) {
+                    // Update related receipts in one query
+                    Receipt::whereIn('party_id', $duplicateIds)->update(['party_id' => $keeper->id]);
+                    ReceiptSale::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+
+                    TempReceiptVoucher::whereIn('party_id', $duplicateIds)->update(['party_id' => $keeper->id]);
+                    TempReceiptVoucherDetail::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    PurchaseExpenseTemp::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    PurchaseExpenseItemTemp::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    PurchaseExpense::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    PurchaseExpenseItem::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    Payment::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    PaymentInvoice::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    TempPaymentVoucher::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    TempPaymentVoucherDetail::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    Journal::whereIn('party_info_id',$duplicateIds)->update(['party_info_id' => $keeper->id]);
+                    JournalRecord::whereIn('party_info_id',$duplicateIds)->update(['party_info_id' => $keeper->id]);
+                    JobProject::whereIn('customer_id',$duplicateIds)->update(['customer_id' => $keeper->id]);
+                    JobProject::whereIn('customer_id',$duplicateIds)->update(['customer_id' => $keeper->id]);
+                    JobProjectInvoice::whereIn('customer_id',$duplicateIds)->update(['customer_id' => $keeper->id]);
+                    JobProjectTemInvoice::whereIn('customer_id',$duplicateIds)->update(['customer_id' => $keeper->id]);
+                    LpoBill::whereIn('party_id',$duplicateIds)->update(['party_id' => $keeper->id]);
+                    // Delete duplicates
+                    PartyInfo::whereIn('id', $duplicateIds)->delete();
+                }
+            }
+        });
     }
 
 

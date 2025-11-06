@@ -719,7 +719,31 @@ class TempPaymentVoucherController extends Controller
 
         return back()->with(['alert-type' => 'success','message' => 'Successfully payment voucher deleted']);
     }
+
+    public function payment_voucher_delete($id){
+        $payment_voucher = Payment::find($id);
+        foreach($payment_voucher->items as $item)
+        {
+            $purchase_expense = PurchaseExpense::find($item->sale_id);
+            $purchase_expense->due_amount = $purchase_expense->due_amount + $item->amount;
+            $purchase_expense->paid_amount = $purchase_expense->paid_amount - $item->amount;
+            $purchase_expense->save();
+            $item->delete();
+        }
+
+        $journal = Journal::where('payment_id',$payment_voucher->id)->first();
+        if($journal)
+        {
+            JournalRecord::where('journal_id',$journal->id)->delete();
+            $journal->forcedelete();
+        }
+
+        $payment_voucher->delete();
+
+        return back()->with(['alert-type' => 'success','message' => 'Successfully payment voucher deleted']);
+    }
     public function search_payment_voucher(Request $request){
+        // dd($request->all());
         $payments = Payment::where('payment_no', 'like', "%{$request->value}%")->get();
         $temp_payments = TempPaymentVoucher::where('payment_no', 'like', "%{$request->value}%")->get();
         if ($request->party != '') {
