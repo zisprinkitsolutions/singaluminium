@@ -2046,15 +2046,56 @@ class AccountsReportController extends Controller
         // SELECT id AS id, party_id AS party_id, date AS date, receipt_no AS transection_no, 'Receipt' AS invoice_type,total_amount AS amount ,'Receipt' AS data_from FROM receipts WHERE 'id' < 0
         // ;
         // ");
-        $fundAllocations = DB::table('fund_allocations')->where('approved', 1)
-            ->when('office_id', fn($query) => $query->where('office_id', $office_id))
-            ->select('id', 'amount', 'date', 'account_id_from', 'transaction_number', DB::raw('"fund_allocations" as source'), 'created_at');
+
+        // $fundAllocations = DB::table('fund_allocations')->where('approved', 1)
+        //     ->when('office_id', fn($query) => $query->where('office_id', $office_id))
+        //     ->leftJoin('employees', 'fund_allocations.paid_by', '=', 'employees.id')
+        //     ->select('id', 'amount', 'date', 'account_id_from', 'transaction_number', 'paid_by', 'employees.full_name', DB::raw('"fund_allocations" as source'), 'created_at');
+        $fundAllocations = DB::table('fund_allocations')
+        ->where('approved', 1)
+        ->when($office_id, fn($query) => $query->where('office_id', $office_id))
+        ->leftJoin('employees', 'fund_allocations.paid_by', '=', 'employees.id')
+        ->select(
+            'fund_allocations.id',
+            'fund_allocations.amount',
+            'fund_allocations.date',
+            'fund_allocations.account_id_from',
+            'fund_allocations.transaction_number',
+            'fund_allocations.paid_by',
+            'employees.full_name',
+            DB::raw('NULL as pi_name'), // ✅ dummy column for union compatibility
+            DB::raw('"fund_allocations" as source'),
+            'fund_allocations.created_at'
+        );
+
         // $purchaseExpenses = DB::table('purchase_expenses')->where('pay_mode', 'Petty Cash')
         //     ->select('id', 'total_amount', 'date', 'pay_mode', 'purchase_no', DB::raw('"purchase_expenses" as source'), 'created_at');
 
-        $payment_voucher = DB::table('payments')->where('pay_mode', 'Petty Cash')
-            ->when('office_id', fn($query) => $query->where('office_id', $office_id))
-            ->select('id', 'total_amount', 'date', 'pay_mode', 'payment_no', DB::raw('"payments" as source'), 'created_at');
+        // dd($fundAllocations);
+
+        // $payment_voucher = DB::table('payments')->where('pay_mode', 'Petty Cash')
+        // ->when('office_id', fn($query) => $query->where('office_id', $office_id))
+        // ->leftJoin('employees', 'payments.paid_by', '=', 'employees.id')
+        // ->select('id', 'total_amount', 'date', 'pay_mode', 'payment_no', 'paid_by', 'employees.full_name', DB::raw('"payments" as source'), 'created_at');
+        $payment_voucher = DB::table('payments')
+        ->where('pay_mode', 'Petty Cash')
+        ->when($office_id, fn($query) => $query->where('payments.office_id', $office_id))
+        ->leftJoin('employees', 'payments.paid_by', '=', 'employees.id')
+        ->leftJoin('party_infos', 'payments.party_id', '=', 'party_infos.id')
+        ->select(
+            'payments.id',
+            'payments.total_amount',
+            'payments.date',
+            'payments.pay_mode',
+            'payments.payment_no',
+            'payments.paid_by',
+            'employees.full_name',
+            'party_infos.pi_name',
+            DB::raw('"payments" as source'),
+            'payments.created_at'
+        );
+
+        // dd($payment_voucher);
 
         if ($request->date && $request->date2) {
             $fundAllocations = $fundAllocations->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
@@ -2065,6 +2106,7 @@ class AccountsReportController extends Controller
         $petty_cashs = $fundAllocations->union($payment_voucher)
             ->orderBy('created_at', 'asc')
             ->get();
+        // dd($petty_cashs);
 
         return view('backend.accounts-report.petty-cash-report', compact('petty_cashs', 'offices', 'office_id'));
     }

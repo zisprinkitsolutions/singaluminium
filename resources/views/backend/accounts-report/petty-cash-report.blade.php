@@ -89,7 +89,9 @@
                                         <tr>
                                             <th style="width: 13%">Date</th>
                                             <th style="width: 13%">Bill/Transaction</th>
+                                            <th style="width: 13%">Owner/Party Name</th>
                                             <th>Paid To/ Receive From</th>
+                                            <th>Payment Account</th>
                                             <th style="width: 13%" class="text-right pr-1">Cash In</th>
                                             <th style="width: 13%" class="text-right pr-1">Cash Out</th>
                                             <th style="width: 13%" class="text-right pr-1">Balance</th>
@@ -121,7 +123,9 @@
                                             <tr>
                                                 <td>{{date('d/m/Y', strtotime($item->date))}}</td>
                                                 <td>{{$item->transaction_number}}</td>
+                                                <td>{{$item->pi_name ?? ''}}</td>
                                                 <td>{{$pay_name}}</td>
+                                                <td>{{$item->full_name ?? '' }}</td>
                                                 <td class="text-right pr-1">
                                                     {{ $cash_in ? number_format($balance_in = $cash_in, 2) : ($balance_in = null) }}
                                                 </td>
@@ -240,7 +244,9 @@
                 <tr>
                     <th style="width: 13%">Date</th>
                     <th style="width: 13%">Bill/Transection</th>
+                    <th style="width: 13%">Owner/Party Name</th>
                     <th>Paid To/ Receive From</th>
+                    <th>Payment Account</th>
                     <th style="width: 13%">Cash In</th>
                     <th style="width: 13%">Cash Out</th>
                     <th style="width: 13%">Balance</th>
@@ -272,7 +278,9 @@
                     <tr>
                         <td>{{date('d/m/Y', strtotime($item->date))}}</td>
                         <td>{{$item->transaction_number}}</td>
+                        <td>{{$item->pi_name ?? ''}}</td>
                         <td>{{$pay_name}}</td>
+                        <td>{{$item->full_name ?? '' }}</td>
                         <td>{{$cash_in?number_format($balance_in=$cash_in,2):$balance_in=null}}</td>
                         <td>{{$cash_out?number_format($balance_out=$cash_out,2):$balance_out=null}}</td>
                         <td>

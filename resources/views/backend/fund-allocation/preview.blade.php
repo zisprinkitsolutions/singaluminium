@@ -177,6 +177,13 @@
             </div>
             @endif
         @endif
+         <div class="">
+                <a href="{{ route('fund-allocation-delete', $fund->id) }}"
+                    class="btn btn-icon btn-danger custom-action-btn " onclick="return confirm('Delete! Confirm?')"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Approve Now">
+                    <i class="bx bx-check"></i> Delete
+                </a>
+            </div>
 
         <div class="" >
             <a href="{{route('allocation-print', $fund->id)}}" class="btn btn-icon btn-secondary univarsal-print custom-action-btn "  title="Print Now">

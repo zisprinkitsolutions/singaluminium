@@ -142,7 +142,8 @@ class JournalEntryController extends Controller
         }
         $journals_temp = $journals_temp->get();
 
-        return view('backend.journal.new-journal', compact('journals', 'journals_temp', 'data'));
+        // return view('backend.journal.new-journal', compact('journals', 'journals_temp', 'data'));
+        return view('backend.journal.new-journal-check', compact('journals', 'journals_temp', 'data'));
     }
 
     public function voucher_preview_modal(Request $request)
@@ -691,6 +692,23 @@ class JournalEntryController extends Controller
         $journal->forceDelete();
         return back()->with('success', 'Deleted Successfully');
         // return redirect()->route('journalEntry')->with('success','Deleted Successfully');
+    }
+    
+      public function journal_delete($id)
+    {
+        $journal = Journal::findOrFail($id);
+
+        // Check if journal is linked with any source transaction
+        if (!$journal->is_deletable)  {
+            return back()->with(['alert-type' => 'warning', 'message' => 'This journal cannot be deleted because it is linked to another transaction.']);
+        }
+
+        JournalRecord::where('journal_id',$journal->id)->forceDelete();
+        $journal->forceDelete();
+
+        // Proceed with delete
+
+        return back()->with(['alert-type' => 'success', 'message' => 'The journal has been deleted']);
     }
     public function journalMakeAuthorize($journal)
     {

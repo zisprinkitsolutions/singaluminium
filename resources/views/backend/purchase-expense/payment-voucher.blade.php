@@ -180,6 +180,7 @@
                                                     <th style="min-width: fit-content;" class="text-right">Amount <br> {{ number_format($data['total_amount'], 2) }}</th>
                                                     <th style="min-width: fit-content;" class="text-left"> Remarks </th>
                                                     <th style="min-width: fit-content;" class="text-center">Mode</th>
+                                                    <th style="min-width: fit-content;" class="text-center">Paid By</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="payment-body">
@@ -197,6 +198,7 @@
                                                         <td class="text-right">{{number_format($item->total_amount,2)}} </td>
                                                         <td style="min-width: fit-content" class="text-left">  <span class="bg-warning text-white" style="padding: 2px 3px;"> Awaiting Approve </span>  </td>
                                                         <td class="text-center">{{$item->pay_mode}}</td>
+                                                        <td class="text-center">{{ optional($item->payment_account)->full_name }}</td>
                                                     </tr>
                                                 @endforeach
                                                 @foreach ($payments as $item)
@@ -210,6 +212,7 @@
                                                         <td class="text-right">{{number_format($item->total_amount,2)}}</td>
                                                         <td class="text-left" style="min-width: fit-content"> <span class="bg-success text-white" style="padding: 2px 3px;"> Approved </span> </td>
                                                         <td class="text-center">{{$item->pay_mode}}</td>
+                                                        <td class="text-center">{{ optional($item->payment_account)->full_name }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

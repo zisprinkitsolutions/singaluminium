@@ -103,9 +103,7 @@
         </table>
     @endif --}}
 @endforeach
-@if (number_format($e_amount, 2, '.', ',') == number_format($p_amount, 2, '.', ',') && number_format($sub_amount, 2, '.', ',') >= number_format($sub_e_amount, 2, '.', ','))
     <div class="mb-1 text-right">
         <small class="text-danger">If you sure expense are al right please click confirm button !</small>
         <button type="button" class="btn btn-success" onclick="purchase_expense(document.getElementById('formSubmit'))">Confirm</button>
     </div>
-@endif

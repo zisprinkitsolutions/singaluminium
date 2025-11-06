@@ -57,6 +57,7 @@ use Illuminate\Support\Facades\Session;
 use Excel;
 use App\ExpenseImport;
 use App\Imports\ExpenseExcelImport;
+use App\Imports\PurchaseImport;
 use App\LpoBill;
 use App\Requisition;
 use App\Subsidiary;
@@ -840,6 +841,61 @@ class purchaseExpenseController extends Controller
         $expenses = PurchaseExpenseTemp::where('authorized', true)->orderBy('id', 'DESC')->get();
         return view('backend.purchase-expense.approve', compact('expenses', 'parties', 'i'));
     }
+    
+     public function approveexpensedelete($id)
+    {
+        $purch_ex = PurchaseExpense::find($id);
+        if ($purch_ex) {
+            $lpo = LpoBill::where('id', $purch_ex->lpo_bill_id)->update(['status' => 'Approved']);
+            $requisition = Requisition::where('id', $purch_ex->requisition_id)->update(['status' => 'Approved']);
+
+            $document = PurchaseExpenseDocument::where('expense_id', $purch_ex->id)->delete();
+            $proj_expenses = ProjectExpense::where('purchase_expense_id', $purch_ex->id)->get();
+            foreach ($proj_expenses as $proj_exp) {
+                $job_project_task = JobProjectTask::where('job_project_id', $proj_exp->project_id)->where('id', $proj_exp->task_id)->first();
+                if ($job_project_task) {
+                    $job_project_task->expense -= $proj_exp->total_amount;
+                    $job_project_task->payable -= $proj_exp->total_amount;
+                    $job_project_task->save();
+                }
+                $proj_exp->delete();
+            }
+            $journal = Journal::where('purchase_expense_id', $purch_ex->id)->first();
+            if ($journal) {
+                JournalRecord::where('journal_id', $journal->id)->forcedelete();
+                $journal->forcedelete();
+            }
+
+            $payments = PaymentInvoice::where('sale_id', $purch_ex->id)->get();
+            foreach ($payments as $payment) {
+                if (PaymentInvoice::where('payment_id', $payment->payment_id)->count() == 1) {
+                     Payment::where('id', $payment->payment_id)->delete();
+                    $journal = Journal::where('payment_id', $payment->payment_id)->first();
+                    if ($journal) {
+                        JournalRecord::where('journal_id', $journal->id)->forcedelete();
+                        $journal->forcedelete();
+                    }
+                    $payment->delete();
+                }
+            }
+
+
+            $subs = SubsidiaryExpense::where('purchase_id', $purch_ex->id);
+
+            StockTransection::where('transection_type', 'Purchase')->where('transection_id', $purch_ex->id)->delete();
+            $purch_ex->delete();
+            $notification = array(
+                'message'       => 'Expense Deleted',
+                'alert-type'    => 'success'
+            );
+            return back()->with($notification);
+        }
+        $notification = array(
+            'message'       => 'Expense Not Found',
+            'alert-type'    => 'warning'
+        );
+        return back()->with($notification);
+    }
 
 
     public function purchase_approval($id)
@@ -926,7 +982,7 @@ class purchaseExpenseController extends Controller
         $subsidiary_expense = SubsidiaryStore::where('purchase_id', $purch->id)->get();
         foreach($subsidiary_expense as $subsidiary_exp){
             $new_sub = new SubsidiaryExpense();
-            $new_sub->purchase_id = $subsidiary_exp->purchase_id;
+            $new_sub->purchase_id = $purch_ex->id;
             $new_sub->company_id = $subsidiary_exp->company_id;
             $new_sub->account_head_id = $subsidiary_exp->account_head_id;
             $new_sub->sub_head_id = $subsidiary_exp->sub_head_id;
@@ -2573,12 +2629,44 @@ class purchaseExpenseController extends Controller
         return view('backend.inventory.stock-report', compact('products', 'from', 'to'));
     }
 
-    public function expense_excel_import(Request $request){
+    public function expense_excel_import_pre(Request $request){
         ExpenseImport::get()->each->forceDelete();
         $request->session()->put('token', $request->token);
         // $request->session()->put('project_id', $request->expense_project_name);
-        Excel::import(new ExpenseExcelImport, $request->excel_file);
+        // Excel::import(new ExpenseExcelImport, $request->excel_file);
+        Excel::import(new PurchaseImport, $request->excel_file);
         return redirect()->route('check-excel-import');
+    }
+
+     public function expense_excel_import(Request $request){
+       $request->validate([
+                'excel_file' => 'required|mimes:xlsx,xls'
+            ]);
+
+            $import = new PurchaseImport;
+            Excel::import($import, $request->file('excel_file'));
+
+            $message = '✅ <strong>The Invoices has been imported successfully.</strong>';
+            $skippedMessages = $import->getSkippedRows();
+            if (!empty($skippedMessages)) {
+                $formattedMessages = "<div style='text-align: left; margin-top: 10px;'>";
+                $formattedMessages .= "<p>⚠️ <strong>However, some rows were skipped:</strong></p>";
+                $formattedMessages .= "<ul style='padding-left: 20px;'>";
+                foreach ($skippedMessages as $msg) {
+                    $formattedMessages .= "<li>🔸 " . e($msg) . "</li>";
+                }
+                $formattedMessages .= "</ul></div>";
+
+                return back()->with([
+                    'alert-type' => 'success',
+                    'message_import' => $message . $formattedMessages
+                ]);
+            }
+
+            return back()->with([
+                'alert-type' => 'success',
+                'message_import' => $message
+            ]);
     }
 
     public function check_excel_import(Request $request){

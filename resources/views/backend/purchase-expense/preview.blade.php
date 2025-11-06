@@ -247,6 +247,13 @@
             </a>
         </div>
     </div>
+    <div class="">
+        <a href="{{ route('approveexpensedelete', $purchase_exp->id) }}" class="btn btn-icon btn-danger custom-action-btn "
+            onclick="return confirm('Delete! Confirm?')" data-bs-toggle="tooltip" data-bs-placement="bottom"
+            title="Approve Now">
+            <i class="bx bx-check"></i> Delete
+        </a>
+    </div>
 </section>
 
 <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true"  data-backdrop="static" data-keyboard="false">

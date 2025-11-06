@@ -49,6 +49,7 @@ Route::get('/get-footer', function () {
 
 Route::get('purchase_number_correction', 'HomeController@p_number_correction');
 Route::get('payment_number_correction', 'HomeController@payment_number_correction');
+Route::get('party-name-correction', 'HomeController@party_correction');
 
 Route::get('employee-party', 'HomeController@emp_party');
 Route::get('opening-cash-asset', 'backend\OpeningBalanceController@opening_cash_asset')->name('opening-cash-asset');
@@ -313,6 +314,7 @@ Route::group(['middleware' => ['auth', 'mobile.redirect']], function () {
             Route::post('temp-payment-voucher-update', 'backend\TempPaymentVoucherController@temp_payment_voucher_update')->name('temp-payment-voucher-update');
             Route::get('temp-payment-voucher-delete/{id}', 'backend\TempPaymentVoucherController@temp_payment_voucher_delete')->name('temp-payment-voucher-delete');
             Route::post('search-payment-voucher', 'backend\TempPaymentVoucherController@search_payment_voucher')->name('search-payment-voucher');
+            Route::get('payment-voucher-delete/{id}', 'backend\TempPaymentVoucherController@payment_voucher_delete')->name('payment-voucher-delete');
 
             Route::post('search-supplier-due', 'backend\purchaseExpenseController@search_supplier_due')->name('search-supplier-due');
             Route::post('available-pay-amount', 'backend\purchaseExpenseController@available_pay_amount')->name('available-pay-amount');
@@ -370,6 +372,7 @@ Route::group(['middleware' => ['auth', 'mobile.redirect']], function () {
         Route::post('approve-purch-exp-modal', 'backend\purchaseExpenseController@approve_purch_exp_modal')->name('approve_purch-exp-modal');
         Route::post('payment-modal', 'backend\purchaseExpenseController@payment_modal')->name('payment-modal');
         //
+        Route::get('approveexpensedelete/{id}', 'backend\purchaseExpenseController@approveexpensedelete')->name('approveexpensedelete');
         Route::post('temp-payment-voucher-preview', 'backend\TempPaymentVoucherController@temp_payment_voucher_preview')->name('temp-payment-voucher-preview');
     //purchase end
     Route::post('expense-excel-import', 'backend\purchaseExpenseController@expense_excel_import')->name('expense-excel-import');
@@ -501,6 +504,7 @@ Route::group(['middleware' => ['auth', 'mobile.redirect']], function () {
         Route::get("journal-edit/{id}", "backend\JournalEntryController@journal_edit")->name("journal_edit");
         Route::post('journal-entry/edit-post/{journal}', 'backend\JournalEntryController@journalEntryEditPost')->name('journalEntryEditPost');
         Route::get('/journal/delete/{journal}', 'backend\JournalEntryController@journalDelete')->name('journalDelete');
+        Route::get('/journal-delete/{journal}', 'backend\JournalEntryController@journal_delete')->name('journal-delete');
         Route::get('tem-journal-view-pdf/{id}', 'backend\JournalEntryController@tem_journal_view_pdf')->name('tem-journal-view-pdf');
         Route::get('/journal-authorize/{journal}', 'backend\JournalEntryController@journalMakeAuthorize')->name('journalMakeAuthorize');
         Route::get('/journal/delete/{journal}', 'backend\JournalEntryController@journalDelete')->name('journalDelete');
@@ -508,6 +512,7 @@ Route::group(['middleware' => ['auth', 'mobile.redirect']], function () {
 
         Route::resource('fund-allocation', 'backend\FundAllocationController');
         Route::get('fund-allocation-approval/{id}', 'backend\FundAllocationController@fund_allocation_approval')->name('fund-allocation-approval');
+        Route::get('fund-allocation-delete/{id}', 'backend\FundAllocationController@fund_allocation_delete')->name('fund-allocation-delete');
         Route::get('fund-allocation-approve', 'backend\FundAllocationController@fund_allocation_approve')->name('fund-allocation-approve');
         Route::get('allocation-print/{id}', 'backend\FundAllocationController@allocation_print')->name('allocation-print');
         Route::post('approve-fund-collection-show', 'backend\FundCollectionController@approve_fund_collection_show')->name('approve-fund-collection-show');
