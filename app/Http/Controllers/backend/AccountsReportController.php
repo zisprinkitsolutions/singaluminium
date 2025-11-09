@@ -2097,10 +2097,18 @@ class AccountsReportController extends Controller
         );
 
         // dd($payment_voucher);
-
+        $opening_balance = 0;
+        if($request->date && $request->date2){
+            $payment = Payment::where('pay_mode', 'Petty Cash');
+            $fundAllocation = FundAllocation::where('account_id_to', 6);
+            if ($request->paid_by){
+                $payment = $payment->where('paid_by', $request->paid_by);
+                $fundAllocation = $fundAllocation->where('paid_by', $request->paid_by);
+            }
+            $opening_balance = $fundAllocation->sum('amount')-$payment->sum('total_amount');
+        }
         if ($request->date && $request->date2) {
             $fundAllocations = $fundAllocations->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
-            // $purchaseExpenses = $purchaseExpenses->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
             $payment_voucher = $payment_voucher->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
         }
         if ($request->paid_by) {
@@ -2112,7 +2120,7 @@ class AccountsReportController extends Controller
             ->get();
         // dd($petty_cashs);
         $employee = Employee::orderBy('full_name')->whereNotIn('division', [4])->get();
-        return view('backend.accounts-report.petty-cash-report', compact('petty_cashs', 'offices', 'office_id', 'employee'));
+        return view('backend.accounts-report.petty-cash-report', compact('petty_cashs', 'offices', 'office_id', 'employee', 'opening_balance'));
     }
     public function bank_account_report(Request $request)
     {

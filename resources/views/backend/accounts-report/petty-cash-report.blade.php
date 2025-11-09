@@ -107,8 +107,12 @@
                                         </tr>
                                     </thead>
                                     <tbody id="purch-body">
+                                        <tr>
+                                            <td colspan="7"><b>Opening Balance</b></td>
+                                            <td class="text-right pr-1">{{number_format($opening_balance,2)}}</td>
+                                        </tr>
                                         @php
-                                            $t_balance=0;
+                                            $t_balance=$opening_balance;
                                             $cash_in = 0;
                                             $cash_out = 0;
                                             $total_cash_in = 0;
