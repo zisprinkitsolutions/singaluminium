@@ -35,9 +35,15 @@
         <div class="master-icon text-cente">
             <img src="{{asset('icon/list.png')}}" alt="" srcset="" class="img-fluid" width="50">
         </div>
-        <div> Petty Cash Reports</div>
+        <div> Petty Cash</div>
     </a>
     @endif
+    <a href="{{route("bank-account-report")}}" class="nav-item nav-link {{ $activeMenu=='bank-account' ? 'active' : ' ' }}" role="tab" aria-controls="nav-contact" aria-selected="false">
+        <div class="master-icon text-cente">
+            <img src="{{asset('icon/list.png')}}" alt="" srcset="" class="img-fluid" width="50">
+        </div>
+        <div> Bank Report</div>
+    </a>
     @if(Auth::user()->hasPermission('Daily_Summary'))
     <a href="{{route("daily-summary.report")}}" class="nav-item nav-link {{ $activeMenu=='daily-summary' ? 'active' : ' ' }}" role="tab" aria-controls="nav-contact" aria-selected="false">
         <div class="master-icon text-cente">

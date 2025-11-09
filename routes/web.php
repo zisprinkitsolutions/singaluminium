@@ -614,6 +614,7 @@ Route::group(['middleware' => ['auth', 'mobile.redirect']], function () {
                 Route::get('payable-reports', 'backend\AccountsReportController@payable_reports')->name('payable-reports');
                 Route::get('missing/invoice/number', 'backend\AccountsReportController@missing_invoice_number')->name('missing-invoice-number');
             });
+            Route::get('bank-account-report', 'backend\AccountsReportController@bank_account_report')->name('bank-account-report');
             Route::get('petty-cash-report', 'backend\AccountsReportController@petty_cash_report')->name('petty-cash-report');
             Route::get('tax-reports', 'backend\AccountsReportController@tax_reports')->name('tax-reports');
             Route::get('statement-other-comprehensive-income', 'backend\AccountsReportController@statement_other_comprehensive_income')->name('statement-other-comprehensive-income');

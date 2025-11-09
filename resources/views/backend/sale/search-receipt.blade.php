@@ -81,3 +81,8 @@
 </tr>
 
 @endforeach
+<tr style="background: #394c62 !important; color: #fff !important;">
+    <td colspan="7" class="text-right " style=" color: #fff !important">Total</td>
+    <td colspan="" style=" color: #fff !important">{{ number_format($temp_receipt_list->sum('total_amount')+$receipt_list->sum('total_amount'), 2) }}</td>
+    <td colspan="2"></td>
+</tr>
