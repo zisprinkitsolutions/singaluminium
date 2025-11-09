@@ -27,6 +27,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\JobProjectInvoice;
 use App\NewProject;
+use App\Models\Payroll\Employee;
 use App\Subsidiary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -2102,15 +2103,37 @@ class AccountsReportController extends Controller
             // $purchaseExpenses = $purchaseExpenses->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
             $payment_voucher = $payment_voucher->whereBetween('date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
         }
-
+        if ($request->paid_by) {
+            $fundAllocations = $fundAllocations->where('paid_by', $request->paid_by);
+            $payment_voucher = $payment_voucher->where('paid_by', $request->paid_by);
+        }
         $petty_cashs = $fundAllocations->union($payment_voucher)
             ->orderBy('created_at', 'asc')
             ->get();
         // dd($petty_cashs);
-
-        return view('backend.accounts-report.petty-cash-report', compact('petty_cashs', 'offices', 'office_id'));
+        $employee = Employee::orderBy('full_name')->whereNotIn('division', [4])->get();
+        return view('backend.accounts-report.petty-cash-report', compact('petty_cashs', 'offices', 'office_id', 'employee'));
     }
+    public function bank_account_report(Request $request)
+    {
+        $office_id = 1;
 
+        if (!$office_id) {
+            $office_id = auth()->user()->office_id;
+        }
+
+        $offices = Office::orderBy('name')->get();
+        $bank_account = JournalRecord::where('account_head_id', 2);
+        if ($request->sub_account_head) {
+            $bank_account = $bank_account->where('sub_account_head_id', $request->sub_account_head);
+        }
+        if ($request->date && $request->date2) {
+            $bank_account = $bank_account->whereBetween('journal_date', [$this->dateFormat($request->date), $this->dateFormat($request->date2)]);
+        }
+        $bank_account = $bank_account->get();
+        $banks = AccountSubHead::where('account_head_id',2)->get();
+        return view('backend.accounts-report.bank-account-report', compact('bank_account', 'offices', 'office_id', 'banks'));
+    }
     public function purchase_reports(Request $request)
     {
         $from = null;

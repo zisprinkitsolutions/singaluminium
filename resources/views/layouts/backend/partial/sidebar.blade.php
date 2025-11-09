@@ -571,7 +571,7 @@
         Auth::user()->hasPermission('Stock_Report'))
     <a href="{{ route('report') }}">
         <li
-            class="menu-item-top-header dropdown {{ request()->is('reports*') || request()->is('daily-summary*') || request()->is('project/engineer/reports') ? 'menu-top-active' : ' ' }}">
+            class="menu-item-top-header dropdown {{ request()->is('reports*') || request()->is('petty-cash-report*') || request()->is('daily-summary*') || request()->is('project/engineer/reports') ? 'menu-top-active' : ' ' }}">
             <span style="color: #fff !important">Reports</span>
             <ul class="dropdown-menu-top-header text-left">
                 @if (Auth::user()->hasPermission('Accounting_Reports'))
@@ -629,6 +629,14 @@
                         </li>
                     </a>
                 @endif
+                <a href="{{ route('bank-account-report') }}">
+                    <li class="{{ request()->is('bank-account-report*') ? 'item-active' : '' }}">
+                        <span class="dropdown-item-top-header">
+                            <i class="bx bx-check-shield"></i>
+                            <span class="menu-title text-truncate" data-i18n="Cost Center">Bank Report</span>
+                        </span>
+                    </li>
+                </a>
                 @if (Auth::user()->hasPermission('Daily_Summary'))
                     <a href="{{ route('daily-summary.report') }}" style="font-size: 14px;">
                         <li class="{{ request()->is('daily-summary') ? 'item-active' : '' }}">
@@ -650,6 +658,14 @@
                         </li>
                     </a>
                 @endif
+                <a href="{{ route('input-vat-report') }}" style="font-size: 14px;">
+                    <li class="{{ request()->is('reports/input-vat-report') ? 'item-active' : ' ' }}">
+                        <span class="dropdown-item-top-header">
+                            <i class="bx bx-check-shield"></i>
+                            <span class="menu-title text-truncate" data-i18n="Cost Center">VAT Report</span>
+                        </span>
+                    </li>
+                </a>
                 @if (Auth::user()->hasPermission('Stock_Report'))
                     <a href="{{ route('stock-report') }}" style="font-size: 14px;">
                         <li class="{{ request()->is('reports/stock-report') ? 'item-active' : ' ' }}">
